@@ -88,7 +88,7 @@ ut actually found 404
 ================================================================================
 ```
 
-Une sythèse de la distribution des temps de réponse entre les deux moteurs est présentée sur l'histogramme suivant:
+Une sythèse de la distribution des temps de réponse entre les deux moteurs est présentée sur l'histogramme suivant :
 
 ![Distribution des temps de réponses pour les coûts peu élevés](court_log.png)
 
@@ -148,7 +148,7 @@ ut actually found 500
 ================================================================================
 ```
 
-Une sythèse de la distribution des temps de réponse entre les deux moteurs est présentée sur les histogrammes suivant:
+Une sythèse de la distribution des temps de réponse entre les deux moteurs est présentée sur les histogrammes suivants :
 
 ![Distribution des temps de réponses pour les coûts élevés (évhelle log)](long_log.png)
 
