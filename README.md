@@ -92,7 +92,11 @@ Une sythèse de la distribution des temps de réponse entre les deux moteurs est
 
 ![Distribution des temps de réponses pour les coûts peu élevés](court_log.png)
 
-BLABLABLA qui raconte tout
+Pour les coûts peu élevés, un grand nombre de requêtes faites via pgRouting a un temps de réponse très court : la médiane nous indique que la moitié de ces requêtes prennent moins de 105 millisecondes a être traitées. Cependant, quelques cas moins avantageux étalent grandement la distribution des temps de réponse, et le temps de réponse moyen est situé à 768 ms, tandis que 99% des requêtes ont été traitées en moins de 6900 ms. On constate donc que même pour des distances courtes, il peut y avoir des temps de calculs longs à certaines aoccasions.
+
+En ce qui concernet Valhalla, les temps de réponse sont bien moins étalés, mais ont un temps de traitement minimal à 173 ms. Cela est certainement dû à l'implémentation du moteur à _Road2_. En effet, Valhalla n'a pas de _bindings_ NodeJS, ce qui m'a contraint à passer par un appel à un exécutable au moment de lancer les requêtes. Cette méthode d'appel crée possiblement un _overhead_, ce qui expliquerait la distribution des temps de réponse.
+
+Malgré ce désavantage, au global, Valhalla est plus performant que pgrouting avec un temps de réponse moyen à 239 ms et 99% des requêtes abouties en moins de 566 ms.
 
 #### Isochrones avec un coût élevé :
 
@@ -153,7 +157,6 @@ Une sythèse de la distribution des temps de réponse entre les deux moteurs est
 ![Distribution des temps de réponses pour les coûts élevés (évhelle log)](long_log.png)
 
 ![Distribution des temps de réponses pour les coûts élevés](long.png)
-
 
 BLABLABLA qui raconte tout
 
