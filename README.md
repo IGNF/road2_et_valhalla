@@ -203,7 +203,9 @@ Des retours internes IGN avaient remonté le fait que les isochrones pgRouting �
 
 ### Limitations du moteur
 
-Le grand avantage du moteur pgRouting, c'est la possibilité de configurer les containtes de circulation grand détail. En plus de l'habituelle restriction possible sur les péages, ponts et tunnels, d'autres nombreux paramètres issus de la BDTopo peuvent être pris en compte. Cependant, depuis la sortie du service, cette possibilité n'est pas vraiment utilisée. Ci après, voici des statistiques sur la sollicitation du service d'isochrones _v2_ sur deux périodes.
+Le grand avantage du moteur pgRouting, c'est la possibilité de configurer les containtes de circulation grand détail. En plus de l'habituelle restriction possible sur les péages, ponts et tunnels, d'autres nombreux paramètres issus de la BDTopo peuvent être pris en compte. Cette possiblité de faire des contraintes sur des attributs précis n'existe pas dans le moteur Valhalla. De plus, la possibilité de faire des contraintes sur les péages, ponts, et tunnel n'existe pas encore dans le moteur Valhalla, et nécessitera un développement (une _pull request_) de notre part. J'ai posé une question à ce sujet pour savoir si une telle _pull request_ serait acceptée par l'équipe de développement de Valhalla, mais [je n'ai toujours pas eu de réponse](https://github.com/valhalla/valhalla/issues/3587).
+
+Afin de déterminer l'impact d'un passage à Valhalla, j'ai sorti des statistiques sur la sollicitation du service d'isochrones _v2_ et sur l'utilisation du paramètre `constraints` sur deux périodes.
 
 #### Du 13/03 au 30/03
 
@@ -216,13 +218,13 @@ Cette période ne voit que très peu de requêtes faites au service, qui était 
   + Tunnel seul :       0     0%
   + Pont + Tunnel :     3     1%
   + Pt + Tu + toll :    1   0,3%
-  + Autres :            0     0%
+  + *Autres :            0     0%*
 
-  + Total :            16     5%
+  + **Total :            16     5%**
 
 #### Du 01/04 au 18/04
 
-Cette période pendant laquelle 7 314 requêtes sont faites au service est marquée par plusieurs grands pics de sollicitation issus d'une seule adresse IP. De fait, la sollicitation concerne majoritairement(69%) un seul utilisateur, et n'est donc pas représentative (mais pour des raisons différentes de la période précédente). Sur les 6923 requêtes faites sur cette période, seules 44 comportent des contraintes, soit 0.6%. L'utilisateur réprésentant 69% des requêtes n'utilisant pas la fonctionnalité, j'ai les statistiques suivantes en retirant les requêtes qu'il a faites.
+Cette période pendant laquelle 7 314 requêtes sont faites au service est marquée par plusieurs grands pics de sollicitation issus d'une seule adresse IP. De fait, la sollicitation concerne majoritairement(69%) un seul utilisateur, et n'est donc pas représentative (mais pour des raisons différentes de la période précédente). Sur les 6923 requêtes faites sur cette période, seules 44 comportent des contraintes, soit 0.6%. L'utilisateur réprésentant 69% des requêtes n'utilisant pas la fonctionnalité, j'ai sorti les statistiques suivantes en retirant les requêtes qu'il a faites.
 
 - Requêtes ISO : 889
 - Dont contraintes :
@@ -231,10 +233,13 @@ Cette période pendant laquelle 7 314 requêtes sont faites au service est marqu
   + Tunnel seul :       0     0%
   + Pont + Tunnel :     0     0%
   + Pt + Tu + toll :    0     0%
-  + Autres :            0     0%
+  + *Autres :           0     0%*
 
-  + Total :            44     5%
+  + **Total :            44     5%**
 
+#### Conculsions sur l'utilisation des contraintes
+
+Dans sa version actuelle, le service d'isochrone _v2_ permet de paramétrer des contraintes sur des attributs divers de le BDTopo. Cette fonctionnalité n'est absolument pas utilisée. Les seules contraintes qui sont dans les requêtes faites par les utilisateurs concernent les attributs historiques : pont, péages et tunnels. Bien qu'elles soient utilisés, ces contraintes ne le sont que par une petite minorité des requêtes faites au service.
 
 ## Quelques scénarios
 
