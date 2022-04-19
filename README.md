@@ -211,33 +211,33 @@ Afin de déterminer l'impact d'un passage à Valhalla, j'ai sorti des statistiqu
 
 Cette période ne voit que très peu de requêtes faites au service, qui était encore jeune. Ainsi je ne sais pas si l'on peut considérer l'échantillon comme représentatif.
 
-| | nombre | pourcentage |
-|---|---|---|
-| Requêtes iso | 309 | |
-| Dont contraintes : | | |
-|Pont seul :      |  8  | 2,6%|
-|Autoroute seul : |  4  | 1,3%|
-|Tunnel seul :    |  0  |   0%|
-|Pont + Tunnel :  |  3  |   1%|
-|Pt + Tu + toll : |  1  | 0,3%|
-|*Autres :*       |  *0*  | *0%*|
-|**Total :**      |  **16** |   **5%**|
+|||||
+|---|---|---|---|
+| Requêtes iso || 309 | |
+| Dont contraintes : || | |
+| |Pont seul :      |  8  | 2,6%|
+| |Autoroute seul : |  4  | 1,3%|
+| |Tunnel seul :    |  0  |   0%|
+| |Pont + Tunnel :  |  3  |   1%|
+| |Pt + Tu + toll : |  1  | 0,3%|
+| |*Autres :*       |  *0*  | *0%*|
+| |**Total :**      |  **16** |   **5%**|
 
 #### Du 01/04 au 18/04
 
 Cette période pendant laquelle 7 314 requêtes sont faites au service est marquée par plusieurs grands pics de sollicitation issus d'une seule adresse IP. De fait, la sollicitation concerne majoritairement(69%) un seul utilisateur, et n'est donc pas représentative (mais pour des raisons différentes de la période précédente). Sur les 6923 requêtes faites sur cette période, seules 44 comportent des contraintes, soit 0.6%. L'utilisateur réprésentant 69% des requêtes n'utilisant pas la fonctionnalité, j'ai sorti les statistiques suivantes en retirant les requêtes qu'il a faites.
 
-| | nombre | pourcentage |
-|---|---|---|
-| Requêtes iso | 889 | |
-| Dont contraintes : | | |
-|Pont seul :      |  44  | 5%|
-|Autoroute seul : |  0  | 0%|
-|Tunnel seul :    |  0  |   0%|
-|Pont + Tunnel :  |  0  |   0%|
-|Pt + Tu + toll : |  0  | 0%|
-|*Autres :*       |  *0*  | *0%*|
-|**Total :**      |  **44** |   **5%**|
+|||||
+|---|---|---|---|
+| Requêtes iso || 889 | |
+| Dont contraintes : || | |
+||Pont seul :      |  44  | 5%|
+||Autoroute seul : |  0  | 0%|
+||Tunnel seul :    |  0  |   0%|
+||Pont + Tunnel :  |  0  |   0%|
+||Pt + Tu + toll : |  0  | 0%|
+||*Autres :*       |  *0*  | *0%*|
+||**Total :**      |  **44** |   **5%**|
 
 #### Conculsions sur l'utilisation des contraintes
 
