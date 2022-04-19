@@ -154,19 +154,92 @@ ut actually found 500
 
 Une sythèse de la distribution des temps de réponse entre les deux moteurs est présentée sur les histogrammes suivants :
 
-![Distribution des temps de réponses pour les coûts élevés (évhelle log)](long_log.png)
+![Distribution des temps de réponses pour les coûts élevés (échelle log)](long_log.png)
 
 ![Distribution des temps de réponses pour les coûts élevés](long.png)
 
-BLABLABLA qui raconte tout
+Les résultats de pgRouting sont, comme on le savait, très en-deçà des performances attendues : si sur les graphiques on ne voit que très peu ce moteur, c'est que l'écrasante majorité des requêtes (99,58%) sont en erreur du fait d'un temps d'attente supérieur à 60 secondes. C'est précisément la raison pour laquelle actuellement, l'appel au service _v1_ est fait à partir d'un certain seuil. Les requêtes qui aboutissent en moins de 60 secondes le font en un temps toujours supérieur à Valhalla (temps minimal de réponse pour pgRouting : 9432ms alors que 99% des temps de réponse pour Valhalla sont inférieurs à 7346ms).
+
+Le moteur Valhalla, quant à lui, présente des performances acceptables. On rappelera que le calcul d'une isochrone est très lourd, et le temps moyen constaté (2603 millisceondes) est proche de celui du service _v1_ (2708ms). De manière globale, le moteur Valhalla a des performances similaires à l'ancien service, voire meilleures : en effet 95% des requêtes sont résolues en moins de 5045ms pour Valhalla contre 6714ms pour le service _v1_.
+
+Statistiques du jeu de données à coût élevé sur le service _v1_.
+```
+================================================================================
+---- Global Information --------------------------------------------------------
+> request count                                       1012 (OK=1009   KO=3     )
+> min response time                                    119 (OK=119    KO=3368  )
+> max response time                                  13601 (OK=13601  KO=3538  )
+> mean response time                                  2708 (OK=2706   KO=3464  )
+> std deviation                                       2163 (OK=2166   KO=71    )
+> response time 50th percentile                       2281 (OK=2275   KO=3487  )
+> response time 75th percentile                       3799 (OK=3801   KO=3513  )
+> response time 95th percentile                       6714 (OK=6717   KO=3533  )
+> response time 99th percentile                      10235 (OK=10238  KO=3537  )
+> mean requests/sec                                  1.008 (OK=1.005  KO=0.003 )
+---- Response Time Distribution ------------------------------------------------
+> t < 800 ms                                           201 ( 20%)
+> 800 ms < t < 1200 ms                                  74 (  7%)
+> t > 1200 ms                                          734 ( 73%)
+> failed                                                 3 (  0%)
+---- Errors --------------------------------------------------------------------
+> status.find.in(200,304,201,202,203,204,205,206,207,208,209), b      3 (100,0%)
+ut actually found 503
+================================================================================
+```
+
+Le moteur Valhalla permet donc, d'un point de vue des performances, de suivre la sollicitation, car ses performaces sont légèrement meilleures que celles du service _v1_ et bien meilleures que celle de pgRouting, que ce soit sur les isochrones longues ou même les isochrones courtes, malgré la visible présence d'un _overhead_ de près de 200ms.
+
 
 ### Quelques résultats d'isochrones
 
+La particularité du calcul d'isochrones fait que le résultat visuel peut être très différent d'un moteur à l'autre, du fait de modes de calcul différents. Par exemple, le mode de calcul de pgRouting se fait au niveau des intersections, alors que celui du service _v1_ et celui de Valhalla se basent sur un maillage de l'espace. Il peut donc être intéressant de comparer la "forme" des divers résultats. Ci-après, j'ai comparé la forme d'une isochrone de 300 secondes pour les 3 moteurs différents, avec un zoom sur un détail du résultat ; puis la même chose pour une isochrone de 1800 secondes.
+
+![Isochrone de 300 secondes](comparaison_iso_300.png)
+![Isochrone de 300 secondes - détail](comparaison_iso_300_detail.png)
+![Isochrone de 1800 secondes](comparaison_iso_1800.png)
+![Isochrone de 1800 secondes - détail](comparaison_iso_1800_detail.png)
+
+Des retours internes IGN avaient remonté le fait que les isochrones pgRouting étaient trop "convexes" ou "simplifiées par rapport à celles obtenues avec l'ancien service, qui fournissait des surfaces avec un niveau de détail très élevé. Cela peut permettre une meilleur généralisation cartographique, mais fait perdre un certain nombre d'informations avec la perte de précision. Les surfaces en sortie du moteur Valhalla ressemblent à celles du service _v1_ au niveau de la granularité de ses limites, ce qui pourrait répondre aux attentes des habitués du service.
 
 ### Limitations du moteur
 
+Le grand avantage du moteur pgRouting, c'est la possibilité de configurer les containtes de circulation grand détail. En plus de l'habituelle restriction possible sur les péages, ponts et tunnels, d'autres nombreux paramètres issus de la BDTopo peuvent être pris en compte. Cependant, depuis la sortie du service, cette possibilité n'est pas vraiment utilisée. Ci après, voici des statistiques sur la sollicitation du service d'isochrones _v2_ sur deux périodes.
+
+#### Du 13/03 au 30/03
+
+Cette période ne voit que très peu de requêtes faites au service, qui était encore jeune. Ainsi je ne sais pas si l'on peut considérer l'échantillon comme représentatif.
+
+- Requêtes ISO : 309
+- Dont contraintes :
+  + Pont seul :         8   2,6%
+  + Autoroute seul :    4   1,3%
+  + Tunnel seul :       0     0%
+  + Pont + Tunnel :     3     1%
+  + Pt + Tu + toll :    1   0,3%
+  + Autres :            0     0%
+
+  + Total :            16     5%
+
+#### Du 01/04 au 18/04
+
+Cette période pendant laquelle 7 314 requêtes sont faites au service est marquée par plusieurs grands pics de sollicitation issus d'une seule adresse IP. De fait, la sollicitation concerne majoritairement(69%) un seul utilisateur, et n'est donc pas représentative (mais pour des raisons différentes de la période précédente). Sur les 6923 requêtes faites sur cette période, seules 44 comportent des contraintes, soit 0.6%. L'utilisateur réprésentant 69% des requêtes n'utilisant pas la fonctionnalité, j'ai les statistiques suivantes en retirant les requêtes qu'il a faites.
+
+- Requêtes ISO : 889
+- Dont contraintes :
+  + Pont seul :        44     5%
+  + Autoroute seul :    0     0%
+  + Tunnel seul :       0     0%
+  + Pont + Tunnel :     0     0%
+  + Pt + Tu + toll :    0     0%
+  + Autres :            0     0%
+
+  + Total :            44     5%
+
 
 ## Quelques scénarios
+
+Au regard de ce que j'ai décrit jusqu'ici, j'ai imaginé plusieurs scénarios par raport au service d'isochrone _v2_.
+
 ### Scénario 0 : on ne change rien
 ### Scénario 1 : ajout de Valhalla dans l'architecture logique
 #### 1.a : Valhalla sans modification du code source
