@@ -248,12 +248,43 @@ Dans sa version actuelle, le service d'isochrone _v2_ permet de paramétrer des 
 Au regard de ce que j'ai décrit jusqu'ici, j'ai imaginé plusieurs scénarios par raport au service d'isochrone _v2_.
 
 ### Scénario 0 : on ne change rien
+
+Le scénario le plus simple et également le plus probable d'après ce que j'ai entendu : on ne change rien sur OSHIMAE et dans le cas d'une reprise de _Road2_ en tant que moteur de calcul d'itinéraire et isochrone dans la géoplateforme, Valhalla servira au calcul d'isochrone. Ce sera donc le premier déploiement de ce moteur, et la "solution de secours" qu'est le service _v1_ ne sera plus disponible.
+
+
+Les scénarios suivants (1 et 2) impliquent du travail pour l'infogérant Thalès, qui devra écrire (scénario 1) ou adapter (s. 2) les scripts Ansible concerant la machine isochrone.
+
 ### Scénario 1 : ajout de Valhalla dans l'architecture logique
+![Architecture logique résumée (scenario 1)](scenar1.png)
+
+Il faut ajouter un script Ansible, ajouter des machines infogérées en QLF / PP / P pour l'iso. -> coût en temps et en argent
+
+On ne perd cependant aucune fonctionnalité offerte par pgRouting car on garde une machine qui fait tourner le moteur.
+
 #### 1.a : Valhalla sans modification du code source
+
+Valhalla sans pull request pour ajouter les restrictions aux ponts, tunnels et péages -> pas très grave parce qu'on a toujours pgRouting dans ce cas de figure.
+
 #### 1.b : Valhalla avec modification du code source
+
+Valhalla avec pull request pour ajouter les restrictions -> on est prêts pour la migration sur la GPF
+
 ### Scénario 2 : remplacement de pgRouting par Valhalla pour les isochrones
+![Architecture logique résumée (scenario 2)](scenar2.png)
+
+Il faut modifier un script Ansible, mais on a une machine en moins sur la QLF / PP / P (celle de la base de données pour l'iso) -> coût en temps mais moindre en argent (à chiffrer...)
+
+On ne perd dans tous les cas les fonctionnalités spécifiques à pgRouting : les restrictions sur des attributs de la BDTopo. Cela dit, d'après ce qu'on a vu plus haut, personne ne s'en sert.
+
 #### 2.a : Valhalla sans modification du code source
+
+En plus de perdre les fonctionnalités pgRouting, on perd la fonctionnalité existante du ponts/péages/tunnels. Embêtant car utilisé (bien que pas 5% des reqêtes) et modification à faire sur le portail.
+
 #### 2.b : Valhalla avec modification du code source
+> mon scénario préféré
+
+On ne perd pas les fonctionnalités déjà existantes dans la _v1_, mais un temps de dev est nécessaire. Je pense le faire dans tous les cas à mon retour de vacances. -> temps de dev à estimer + relancer l'équipe Valhalla sur mon _issue_.
 
 ## Informations complémentaires
 ### Pourquoi ne pas utiliser Valhalla pour les itinéraires ?
+Aucun avantage de performance ou configuration par rapport à OSRM, bien moins personnalisable que pgRouting : les 2 moteurs déjà utilisés sont très complémentaires et Valhalla ne couvre pas de cas d'utilisation en plus que ces 2 là pour piéton et voiture. Si on jour un intègre vélo, cette question sera à réévaluer.
