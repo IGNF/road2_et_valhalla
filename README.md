@@ -247,9 +247,14 @@ Dans sa version actuelle, le service d'isochrone _v2_ permet de paramétrer des 
 
 Au regard de ce que j'ai décrit jusqu'ici, j'ai imaginé plusieurs scénarios par raport au service d'isochrone _v2_.
 
-### Scénario 0 : on ne change rien
+> MAJ 21/06/2022 : A priori, le scenario 0 sera adopté : en effet, aucun retour négatif n'est parvenu jusqu'au pôle technique, ne justifiant pas d'opérations sur la plateforme actuelle. Il faudra cependant prévoir le passage à la Géoplateforme, et pour cela il y a un travail à faire pour la restriction sur les péages, ponts et tunnels
 
-Le scénario le plus simple et également le plus probable d'après ce que j'ai entendu : on ne change rien sur OSHIMAE et dans le cas d'une reprise de _Road2_ en tant que moteur de calcul d'itinéraire et isochrone dans la géoplateforme, Valhalla servira au calcul d'isochrone. Ce sera donc le premier déploiement de ce moteur, et la "solution de secours" qu'est le service _v1_ ne sera plus disponible.
+
+### Scénario 0 : délpoiement de Valhalla à partir de la Géoplateforme
+
+Le scénario le plus simple et également le plus probable d'après ce que j'ai entendu : on ne change rien sur OSHIMAE et dans le cas d'une reprise de _Road2_ en tant que moteur de calcul d'itinéraire et isochrone dans la Géoplateforme, Valhalla servira au calcul d'isochrone. Ce sera donc le premier déploiement de ce moteur, et la "solution de secours" qu'est le service _v1_ ne sera plus disponible.
+
+Afin de prévoir ce scénario en toute sérénité, il va falloir lancer les développements liés aux restrictions sur les péages, ponts et tunnels. Cela devrait prendre 20 à 40 JH.
 
 
 Les scénarios suivants (1 et 2) impliquent du travail pour l'infogérant Thalès, qui devra écrire (scénario 1) ou adapter (s. 2) les scripts Ansible concerant la machine isochrone.
@@ -267,7 +272,7 @@ Valhalla sans pull request pour ajouter les restrictions aux ponts, tunnels et p
 
 #### 1.b : Valhalla avec modification du code source
 
-Valhalla avec pull request pour ajouter les restrictions -> on est prêts pour la migration sur la GPF
+Valhalla avec pull request pour ajouter les restrictions (20 - 40 JH) -> on est prêts pour la migration sur la GPF
 
 ### Scénario 2 : remplacement de pgRouting par Valhalla pour les isochrones
 ![Architecture logique résumée (scenario 2)](scenar2.png)
@@ -283,7 +288,7 @@ En plus de perdre les fonctionnalités pgRouting, on perd la fonctionnalité exi
 #### 2.b : Valhalla avec modification du code source
 > mon scénario préféré
 
-On ne perd pas les fonctionnalités déjà existantes dans la _v1_, mais un temps de dev est nécessaire. Je pense le faire dans tous les cas à mon retour de vacances. -> temps de dev à estimer + relancer l'équipe Valhalla sur mon _issue_.
+On ne perd pas les fonctionnalités déjà existantes dans la _v1_, mais un temps de dev est nécessaire. Je pense le faire dans tous les cas à mon retour de vacances. -> temps de dev à estimer (20 - 40 JH) + relancer l'équipe Valhalla sur mon _issue_.
 
 ## Informations complémentaires
 ### Pourquoi ne pas utiliser Valhalla pour les itinéraires ?
