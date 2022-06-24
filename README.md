@@ -247,7 +247,8 @@ Dans sa version actuelle, le service d'isochrone _v2_ permet de paramétrer des 
 
 Au regard de ce que j'ai décrit jusqu'ici, j'ai imaginé plusieurs scénarios par raport au service d'isochrone _v2_.
 
-> MAJ 21/06/2022 : A priori, le scenario 0 sera adopté : en effet, aucun retour négatif n'est parvenu jusqu'au pôle technique, ne justifiant pas d'opérations sur la plateforme actuelle. Il faudra cependant prévoir le passage à la Géoplateforme, et pour cela il y a un travail à faire pour la restriction sur les péages, ponts et tunnels
+> MAJ 21/06/2022 : A priori, le scenario 0 sera adopté : en effet, aucun retour négatif n'est parvenu jusqu'au pôle technique, ne justifiant pas d'opérations sur la plateforme actuelle. Il faudra cependant prévoir le passage à la Géoplateforme, et pour cela il y a un travail à faire pour la restriction sur les péages, ponts et tunnels.
+> Cependant, si de trop nombreux retours négatifs arrivent sur la forme des isochrones, et que la GPF est trop retardée, il faudra se pencher sur les scénarios 1 et 2, et plus particulièrement sur le 2.b. qui me semble être le plus pertinent.
 
 
 ### Scénario 0 : délpoiement de Valhalla à partir de la Géoplateforme
@@ -262,33 +263,52 @@ Les scénarios suivants (1 et 2) impliquent du travail pour l'infogérant Thalè
 ### Scénario 1 : ajout de Valhalla dans l'architecture logique
 ![Architecture logique résumée (scenario 1)](scenar1.png)
 
-Il faut ajouter un script Ansible, ajouter des machines infogérées en QLF / PP / P pour l'iso. -> coût en temps et en argent
+Côté infogérant Thalès, il fadra créer un script Ansible spécifique à la machine Valhalla, et ajouter des machines infogérées en qualification, préproduction et production. Cela pourra prendre un temps non négligeable, et donnera certainement lieu à une tarification de la part de Thalès, à chiffres à partir de leurs précédentes propositions sur d'autres sujets (géocodage par exemple). De plus, on devra payer une machine suppléùmentaire sur les trois environnements.
 
-On ne perd cependant aucune fonctionnalité offerte par pgRouting car on garde une machine qui fait tourner le moteur.
+On ne perd cependant aucune fonctionnalité offerte par pgRouting car on garde une machine qui fait tourner le moteur : il s'agit d'ajouter une ressource Valhalla en plus de la ressource pgRouting.
 
 #### 1.a : Valhalla sans modification du code source
 
-Valhalla sans pull request pour ajouter les restrictions aux ponts, tunnels et péages -> pas très grave parce qu'on a toujours pgRouting dans ce cas de figure.
+La première hypothèse qu'on pourra prendre pour ce scénario est celle de l'ajout d'une ressource dédiée à Valhalla, sans modification du code source de ce dernier pour ajouter les restrictions sur ponts, tunnels et péages. Ainsi, on s'épargne le temps de développement sur la bibliothèque, et une fois le travail terminé par Thalès, la ressource peut être immédiatement déployée.
+
+Cela ne générera pas de perte de fonctionnalité, car les restrictions seront toujours possibles via la ressource pgRouting qui sera encore disponible.
 
 #### 1.b : Valhalla avec modification du code source
 
-Valhalla avec pull request pour ajouter les restrictions (20 - 40 JH) -> on est prêts pour la migration sur la GPF
+La seconde hypothèse est le déploiement de Valhalla après ajout à la bibliothèque via _pull request_ des fonctionnalités de restrictions que l'on souhaite. Cela ajoute au scenario précédent un temps de développement côté pôle technique que j'estime de 20 à 40 JH.
+
+Cette hypothèse a pour avantage de faire contribuer l'IGN à une bibliothèque open source qu'il utilise, mais aussi (et surtout) d'être prêts au déploiement sur la Géoplateforme (car on le rappelle, la "solution de secours" d'utiliser smartRouting sur la ressource pgRouting pour les longs isochrones ne sera plus disponible).
 
 ### Scénario 2 : remplacement de pgRouting par Valhalla pour les isochrones
 ![Architecture logique résumée (scenario 2)](scenar2.png)
 
-Il faut modifier un script Ansible, mais on a une machine en moins sur la QLF / PP / P (celle de la base de données pour l'iso) -> coût en temps mais moindre en argent (à chiffrer...)
+Côté infogérant Thalès, il fadra créer un script Ansible spécifique à la machine Valhalla, et ajouter des machines infogérées en qualification, préproduction et production. Cela pourra prendre un temps non négligeable, et donnera certainement lieu à une tarification de la part de Thalès, à chiffres à partir de leurs précédentes propositions sur d'autres sujets (géocodage par exemple). Ceopendant contrairement au scenario 1, il n'y aura pas de machine supplémentaire, donc pas de VM supplémentaire à louer.
 
-On ne perd dans tous les cas les fonctionnalités spécifiques à pgRouting : les restrictions sur des attributs de la BDTopo. Cela dit, d'après ce qu'on a vu plus haut, personne ne s'en sert.
+Dans les deux scénarios suivants, on perd les fonctionnalités spécifiques à pgRouting : les restrictions sur des attributs de la BDTopo. Cela dit, d'après ce qu'on a vu plus haut, cela ne devrait pas poser problème du fait de l'utilisation inexistante de cette fonctionnalité.
 
 #### 2.a : Valhalla sans modification du code source
 
-En plus de perdre les fonctionnalités pgRouting, on perd la fonctionnalité existante du ponts/péages/tunnels. Embêtant car utilisé (bien que pas 5% des reqêtes) et modification à faire sur le portail.
+La première hypothèse qu'on pourra prendre pour ce scénario est celle de l'ajout d'une ressource dédiée à Valhalla, sans modification du code source de ce dernier pour ajouter les restrictions sur ponts, tunnels et péages. Ainsi, on s'épargne le temps de développement sur la bibliothèque, et une fois le travail terminé par Thalès, la ressource peut être immédiatement déployée.
+
+Cependant, en plus de perdre les fonctionnalités pgRouting, on perd la fonctionnalité existante des restrictions sur les ponts, péages et tunnels. Cela pose problème car cette fonctionnalité est utilisée (bien que par 5% des reqêtes), et cela entraîne des modifications à faire sur le portail sur le widget de calcul d'isochrones.
 
 #### 2.b : Valhalla avec modification du code source
-> mon scénario préféré
+> Le scénario que je préconise en cas de volonté d'améliorer les isochrnoes dans le cadre du marché du GPP sur OSHIMAE
 
-On ne perd pas les fonctionnalités déjà existantes dans la _v1_, mais un temps de dev est nécessaire. Je pense le faire dans tous les cas à mon retour de vacances. -> temps de dev à estimer (20 - 40 JH) + relancer l'équipe Valhalla sur mon _issue_.
+La seconde hypothèse est le déploiement de Valhalla après ajout à la bibliothèque via _pull request_ des fonctionnalités de restrictions que l'on souhaite. Cela ajoute au scenario précédent un temps de développement côté pôle technique que j'estime de 20 à 40 JH. Cela permettra de ne pas perdre les fonctionnalités présentes sur la _v1_ du service.
+
+Cette hypothèse a pour avantage de faire contribuer l'IGN à une bibliothèque open source qu'il utilise, mais aussi (et surtout) d'être prêts au déploiement sur la Géoplateforme (car on le rappelle, la "solution de secours" d'utiliser smartRouting sur la ressource pgRouting pour les longs isochrones ne sera plus disponible). Par rapport au scénario 1.b, ce scenario a également l'avantage d'avoir une architecture logique plus simple, et donc un coût de maintenance moins élevé.
+
+
+### Récapitulatif des coûts de chaque scenario
+
+| Scénario | Résumé | Temps IGN | Temps Thalès | Coût de la commande à TS, coût supplémentaire par mois |
+|---|---|---|---|---|
+| **0** | travail remis à plus tard, sera à réaliser côté IGN pour le passage sur la GPF | 20-40 JH | 0 JH | / |
+| **1.a** | architecture logique plus complexe | 3 JH | x JH | y€, z€/mois |
+| **1.b** | architecture logique plus complexe, préparation à la GPF | 20-40 JH | x JH | y€, z€/mois |
+| **2.a** | perte de la restriction sur péages/ponts/tunnels | 3 JH | x' JH | y'€, 0€/mois |
+| **2.b** | aucune perte de fonctionnalité par rapport au service v1, préparation à la GPF | 20-40 JH | x' JH | y'€, 0€/mois |
 
 ## Informations complémentaires
 ### Pourquoi ne pas utiliser Valhalla pour les itinéraires ?
