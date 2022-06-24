@@ -248,6 +248,7 @@ Dans sa version actuelle, le service d'isochrone _v2_ permet de paramétrer des 
 Au regard de ce que j'ai décrit jusqu'ici, j'ai imaginé plusieurs scénarios par raport au service d'isochrone _v2_.
 
 > MAJ 21/06/2022 : A priori, le scenario 0 sera adopté : en effet, aucun retour négatif n'est parvenu jusqu'au pôle technique, ne justifiant pas d'opérations sur la plateforme actuelle. Il faudra cependant prévoir le passage à la Géoplateforme, et pour cela il y a un travail à faire pour la restriction sur les péages, ponts et tunnels.
+>
 > Cependant, si de trop nombreux retours négatifs arrivent sur la forme des isochrones, et que la GPF est trop retardée, il faudra se pencher sur les scénarios 1 et 2, et plus particulièrement sur le 2.b. qui me semble être le plus pertinent.
 
 
